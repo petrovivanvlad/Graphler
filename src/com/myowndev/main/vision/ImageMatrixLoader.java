@@ -25,6 +25,7 @@ public class ImageMatrixLoader {
         initImages();
 
         matrixPrint(ImageContainer.bact_BaA_266nm_matrix);
+        matrixPrint(ImageContainer.bact_cereus_280nm_matrix);
     }
 
     private void initImages() {
@@ -35,6 +36,13 @@ public class ImageMatrixLoader {
             ImageContainer.bact_BaA_266nm_matrix = new int[ImageContainer.bact_BaA_266nm_Width][ImageContainer.bact_BaA_266nm_Height][2];
             ImageContainer.bact_BaA_266nm_matrix = populateMatrix(ImageContainer.bact_BaA_266nm_BI, ImageContainer.bact_BaA_266nm_matrix, ImageContainer.bact_BaA_266nm_Path);
             ImageContainer.bact_BaA_266nm_matrix = ImageMatrixPreProcess.normalizeMatrix(ImageContainer.bact_BaA_266nm_matrix);
+
+            ImageContainer.bact_cereus_280nm_BI = ImageIO.read(Files.newInputStream(Paths.get(ImageContainer.bact_cereus_280nm_Path)));
+            ImageContainer.bact_cereus_280nm_Width = ImageContainer.bact_cereus_280nm_BI.getWidth();
+            ImageContainer.bact_cereus_280nm_Height = ImageContainer.bact_cereus_280nm_BI.getHeight();
+            ImageContainer.bact_cereus_280nm_matrix = new int[ImageContainer.bact_cereus_280nm_Width][ImageContainer.bact_cereus_280nm_Height][2];
+            ImageContainer.bact_cereus_280nm_matrix = populateMatrix(ImageContainer.bact_cereus_280nm_BI, ImageContainer.bact_cereus_280nm_matrix, ImageContainer.bact_cereus_280nm_Path);
+            ImageContainer.bact_cereus_280nm_matrix = ImageMatrixPreProcess.normalizeMatrix(ImageContainer.bact_cereus_280nm_matrix);
         } catch (IOException e) {
             e.printStackTrace();
         }

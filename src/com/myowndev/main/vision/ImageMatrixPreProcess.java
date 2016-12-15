@@ -31,15 +31,42 @@ public class ImageMatrixPreProcess {
         int bottomYCornerValue = tempMatrix[0].length;
         // Вычисляем края прямоугольника:
         int y = 0;
+        int x = 0;
         do {
-            for (int x = 0; x < tempMatrix.length; x++) {
+            for (x = 0; x < tempMatrix.length; x++) {
                 if (tempMatrix[x][y][0] == 1) {
                     topYCornerValue = y;
                 }
             }
             y++;
         } while (topYCornerValue == 0);
-        System.out.println(topYCornerValue);
+        x = 0;
+        do {
+            for (y = 0; y < tempMatrix[0].length; y++) {
+                if (tempMatrix[x][y][0] == 1) {
+                    leftXCornerValue = x;
+                }
+            }
+            x++;
+        } while (leftXCornerValue == 0);
+        x = tempMatrix.length - 1;
+        do {
+            for (y = 0; y < tempMatrix[0].length; y++) {
+                if (tempMatrix[x][y][0] == 1) {
+                    rightXCornerValue = x;
+                }
+            }
+            x--;
+        } while (rightXCornerValue == tempMatrix.length);
+        y = tempMatrix[0].length - 1;
+        do {
+            for (x = 0; x < tempMatrix.length; x++) {
+                if (tempMatrix[x][y][0] == 1) {
+                    bottomYCornerValue = y;
+                }
+            }
+            y--;
+        } while (bottomYCornerValue == tempMatrix[0].length);
 
         tempMatrix = reInitWithNewBoundsMatrix(
                 tempMatrix, leftXCornerValue, rightXCornerValue, topYCornerValue, bottomYCornerValue);
