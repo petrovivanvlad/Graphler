@@ -10,7 +10,7 @@ public class Main {
         // load images & image preprocessing:
         new ImageMatrixLoader();
 
-        // convolutional neural network job/train(with backpropogation)
+        // neural network job/train(with backpropogation)
 
         // results
     }

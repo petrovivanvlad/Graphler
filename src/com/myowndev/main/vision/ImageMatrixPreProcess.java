@@ -16,9 +16,12 @@ public class ImageMatrixPreProcess {
         // Убираем белое пространство вокруг линии спектра:
         tempMatrix = removeWhiteSpaces(tempMatrix);
         // Восстанавливаем пропущенные промежутки линии спектра:
-
+        // TODO: можно не делать
         // Делаем линию тоньще, чтобы вокруг каждого закрашенного пикселя был только один закрашенный пиксель вокруг:
-
+        // TODO: можно сделать
+        return tempMatrix;
+    }
+    private int[][][] makeLineThinner(int[][][] tempMatrix) {
         return tempMatrix;
     }
     private int[][][] do_KalmanFilter(int[][][] tempMatrix) { // https://habrahabr.ru/post/166693/
@@ -32,49 +35,79 @@ public class ImageMatrixPreProcess {
         // Вычисляем края прямоугольника:
         int y = 0;
         int x = 0;
-        do {
-            for (x = 0; x < tempMatrix.length; x++) {
-                if (tempMatrix[x][y][0] == 1) {
-                    topYCornerValue = y;
-                }
-            }
-            y++;
-        } while (topYCornerValue == 0);
-        x = 0;
-        do {
-            for (y = 0; y < tempMatrix[0].length; y++) {
-                if (tempMatrix[x][y][0] == 1) {
-                    leftXCornerValue = x;
-                }
-            }
-            x++;
-        } while (leftXCornerValue == 0);
-        x = tempMatrix.length - 1;
-        do {
-            for (y = 0; y < tempMatrix[0].length; y++) {
-                if (tempMatrix[x][y][0] == 1) {
-                    rightXCornerValue = x;
-                }
-            }
-            x--;
-        } while (rightXCornerValue == tempMatrix.length);
-        y = tempMatrix[0].length - 1;
-        do {
-            for (x = 0; x < tempMatrix.length; x++) {
-                if (tempMatrix[x][y][0] == 1) {
-                    bottomYCornerValue = y;
-                }
-            }
-            y--;
-        } while (bottomYCornerValue == tempMatrix[0].length);
+        boolean check = true;
 
+        for (int i = 0; i < tempMatrix.length; i++)
+            if (tempMatrix[i][0][0] != 0)
+                check = false;
+        if (check)
+            do {
+                for (x = 0; x < tempMatrix.length; x++)
+                    if (tempMatrix[x][y][0] == 1) {
+                        topYCornerValue = y;
+                        break;
+                    }
+                y++;
+            } while (topYCornerValue == 0);
+        check = true;
+        x = 0;
+        for (int i = 0; i < tempMatrix[0].length; i++)
+            if (tempMatrix[0][i][0] != 0)
+                check = false;
+        if (check) {
+            do {
+                for (y = 0; y < tempMatrix[0].length; y++) {
+                    if (tempMatrix[x][y][0] == 1) {
+                        leftXCornerValue = x;
+                        break;
+                    }
+                }
+                x++;
+            } while (leftXCornerValue == 0);
+        }
+        check = true;
+        x = tempMatrix.length - 1;
+        for (int i = 0; i < tempMatrix[0].length; i++)
+            if (tempMatrix[tempMatrix.length - 1][i][0] != 0)
+                check = false;
+        if (check) {
+            do {
+                for (y = 0; y < tempMatrix[0].length; y++) {
+                    if (tempMatrix[x][y][0] == 1) {
+                        rightXCornerValue = x;
+                        break;
+                    }
+                }
+                x--;
+            } while (rightXCornerValue == tempMatrix.length);
+        }
+        check = true;
+        y = tempMatrix[0].length - 1;
+        for (int i = 0; i < tempMatrix.length; i++)
+            if (tempMatrix[i][tempMatrix[0].length - 1][0] != 0)
+                check = false;
+        if (check) {
+            do {
+                for (x = 0; x < tempMatrix.length; x++) {
+                    if (tempMatrix[x][y][0] == 1) {
+                        bottomYCornerValue = y;
+                        break;
+                    }
+                }
+                y--;
+            } while (bottomYCornerValue == tempMatrix[0].length);
+        }
         tempMatrix = reInitWithNewBoundsMatrix(
-                tempMatrix, leftXCornerValue, rightXCornerValue, topYCornerValue, bottomYCornerValue);
+                tempMatrix,
+                leftXCornerValue,
+                rightXCornerValue,
+                topYCornerValue,
+                bottomYCornerValue);
         return tempMatrix;
     }
     private static int[][][] removeCoordsLines(int[][][] tempMatrix) {
         // 1. Убираем линию оси X:
-        int lineRowValue = 20; // Число, чтобы быть уверенным, что это точно линия
+        int lineRowValue = 12; // Число, чтобы быть уверенным, что это точно линия
         int lineCounter = 0;
         int bottomYCornerValue = 0;
         int y = (tempMatrix[0].length - (int)(tempMatrix[0].length * 25 / 100)); // Предположительно, линия находится в области 25% от нижнего края.
@@ -87,46 +120,54 @@ public class ImageMatrixPreProcess {
                 }
                 if (lineCounter == lineRowValue) {
                     bottomYCornerValue = y;
+                    break;
                 }
             }
             y++;
         } while (y < tempMatrix[0].length);
-        tempMatrix = reInitWithNewBoundsMatrix(
-                tempMatrix, 0, tempMatrix.length, 0, bottomYCornerValue);
         // 2. Убираем линию оси Y:
-        // нету
+        lineCounter = 0;
+        int leftXCornerValue = 0;
+        int x = (int)(tempMatrix.length * 25 / 100);
+        do {
+            for (y = 0; y < tempMatrix[0].length; y++) {
+                if (tempMatrix[x][y][0] == 1) {
+                    lineCounter++;
+                } else {
+                    lineCounter = 0;
+                }
+                if (lineCounter == lineRowValue) {
+                    leftXCornerValue = x + 1; // Проверить на единичку
+                    break;
+                }
+            }
+            x--;
+        } while (x > 0);
+        tempMatrix = reInitWithNewBoundsMatrix(
+                tempMatrix,
+                leftXCornerValue,
+                tempMatrix.length,
+                0,
+                bottomYCornerValue);
         return tempMatrix;
     }
-
     private static int[][][] reInitWithNewBoundsMatrix(
             int[][][] oldMatrix,
             int leftXCornerValue,
             int rightXCornerValue,
             int topYCornerValue,
-            int bottomYCornerValue) { // (reinit an array)
+            int bottomYCornerValue) {
         int[][][] newMatrix = new int[rightXCornerValue - leftXCornerValue][bottomYCornerValue - topYCornerValue][2];
         int i = 0;
         int j = 0;
         for (int y = topYCornerValue; y < bottomYCornerValue; y++) {
             for (int x = leftXCornerValue; x < rightXCornerValue; x++) {
                 newMatrix[i][j][0] = oldMatrix[x][y][0];
-                //System.out.print(newMatrix[i][j][0] + "-" + oldMatrix[x][y][0] + " ");
-                //System.out.print(newMatrix[i][j][0] + "(" + i + "," + j + ") ");
-                if (i < (rightXCornerValue - leftXCornerValue) - 1) {
-                    i++;
-                }
+                i++;
             }
-            if (j < (bottomYCornerValue - topYCornerValue) - 1) {
-                j++;
-                i = 0;
-            }
-            //System.out.println();
+            j++;
+            i = 0;
         }
-        /*for (int k = 0; k < i; k++) {
-            for (int l = 0; l < j; l++) {
-                System.out.print(newMatrix[k][l][0]);
-            }
-        }*/
         return newMatrix;
     }
 

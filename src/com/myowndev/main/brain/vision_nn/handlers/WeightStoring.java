@@ -1,4 +1,4 @@
-package com.myowndev.main.brain.vision_cnn.handlers;
+package com.myowndev.main.brain.vision_nn.handlers;
 
 /**
  * Created by Iwanp on 15.12.2016.

@@ -1,4 +1,4 @@
-package com.myowndev.main.brain.vision_cnn.neurons;
+package com.myowndev.main.brain.vision_nn.neurons;
 
 /**
  * Created by Iwanp on 15.12.2016.
