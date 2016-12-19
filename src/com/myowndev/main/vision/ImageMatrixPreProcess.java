@@ -10,7 +10,7 @@ public class ImageMatrixPreProcess {
          пикселем в каждом столбце по вертикали.
      */
 
-    public static int[][][] normalizeMatrix(int[][][] tempMatrix) {
+    public static int[][] normalizeMatrix(int[][] tempMatrix) {
         // Убираем шкалы по краям (оси абсцисс и ординат с подписями):
         tempMatrix = removeCoordsLines(tempMatrix);
         // Убираем белое пространство вокруг линии спектра:
@@ -21,13 +21,13 @@ public class ImageMatrixPreProcess {
         // TODO: можно сделать
         return tempMatrix;
     }
-    private int[][][] makeLineThinner(int[][][] tempMatrix) {
+    private int[][] makeLineThinner(int[][] tempMatrix) {
         return tempMatrix;
     }
-    private int[][][] do_KalmanFilter(int[][][] tempMatrix) { // https://habrahabr.ru/post/166693/
+    private int[][] do_KalmanFilter(int[][] tempMatrix) { // https://habrahabr.ru/post/166693/
         return tempMatrix;
     }
-    private static int[][][] removeWhiteSpaces(int[][][] tempMatrix) {
+    private static int[][] removeWhiteSpaces(int[][] tempMatrix) {
         int leftXCornerValue = 0;
         int rightXCornerValue = tempMatrix.length;
         int topYCornerValue = 0;
@@ -38,12 +38,12 @@ public class ImageMatrixPreProcess {
         boolean check = true;
 
         for (int i = 0; i < tempMatrix.length; i++)
-            if (tempMatrix[i][0][0] != 0)
+            if (tempMatrix[i][0] != 0)
                 check = false;
         if (check)
             do {
                 for (x = 0; x < tempMatrix.length; x++)
-                    if (tempMatrix[x][y][0] == 1) {
+                    if (tempMatrix[x][y] == 1) {
                         topYCornerValue = y;
                         break;
                     }
@@ -52,12 +52,12 @@ public class ImageMatrixPreProcess {
         check = true;
         x = 0;
         for (int i = 0; i < tempMatrix[0].length; i++)
-            if (tempMatrix[0][i][0] != 0)
+            if (tempMatrix[0][i] != 0)
                 check = false;
         if (check) {
             do {
                 for (y = 0; y < tempMatrix[0].length; y++) {
-                    if (tempMatrix[x][y][0] == 1) {
+                    if (tempMatrix[x][y] == 1) {
                         leftXCornerValue = x;
                         break;
                     }
@@ -68,13 +68,13 @@ public class ImageMatrixPreProcess {
         check = true;
         x = tempMatrix.length - 1;
         for (int i = 0; i < tempMatrix[0].length; i++)
-            if (tempMatrix[tempMatrix.length - 1][i][0] != 0)
+            if (tempMatrix[tempMatrix.length - 1][i] != 0)
                 check = false;
         if (check) {
             do {
                 for (y = 0; y < tempMatrix[0].length; y++) {
-                    if (tempMatrix[x][y][0] == 1) {
-                        rightXCornerValue = x;
+                    if (tempMatrix[x][y] == 1) {
+                        rightXCornerValue = x + 1;
                         break;
                     }
                 }
@@ -84,13 +84,13 @@ public class ImageMatrixPreProcess {
         check = true;
         y = tempMatrix[0].length - 1;
         for (int i = 0; i < tempMatrix.length; i++)
-            if (tempMatrix[i][tempMatrix[0].length - 1][0] != 0)
+            if (tempMatrix[i][tempMatrix[0].length - 1] != 0)
                 check = false;
         if (check) {
             do {
                 for (x = 0; x < tempMatrix.length; x++) {
-                    if (tempMatrix[x][y][0] == 1) {
-                        bottomYCornerValue = y;
+                    if (tempMatrix[x][y] == 1) {
+                        bottomYCornerValue = y + 1;
                         break;
                     }
                 }
@@ -105,7 +105,7 @@ public class ImageMatrixPreProcess {
                 bottomYCornerValue);
         return tempMatrix;
     }
-    private static int[][][] removeCoordsLines(int[][][] tempMatrix) {
+    private static int[][] removeCoordsLines(int[][] tempMatrix) {
         // 1. Убираем линию оси X:
         int lineRowValue = 12; // Число, чтобы быть уверенным, что это точно линия
         int lineCounter = 0;
@@ -113,7 +113,7 @@ public class ImageMatrixPreProcess {
         int y = (tempMatrix[0].length - (int)(tempMatrix[0].length * 25 / 100)); // Предположительно, линия находится в области 25% от нижнего края.
         do {
             for (int x = 0; x < tempMatrix.length; x++) {
-                if (tempMatrix[x][y][0] == 1) {
+                if (tempMatrix[x][y] == 1) {
                     lineCounter++;
                 } else {
                     lineCounter = 0;
@@ -131,7 +131,7 @@ public class ImageMatrixPreProcess {
         int x = (int)(tempMatrix.length * 25 / 100);
         do {
             for (y = 0; y < tempMatrix[0].length; y++) {
-                if (tempMatrix[x][y][0] == 1) {
+                if (tempMatrix[x][y] == 1) {
                     lineCounter++;
                 } else {
                     lineCounter = 0;
@@ -151,18 +151,18 @@ public class ImageMatrixPreProcess {
                 bottomYCornerValue);
         return tempMatrix;
     }
-    private static int[][][] reInitWithNewBoundsMatrix(
-            int[][][] oldMatrix,
+    private static int[][] reInitWithNewBoundsMatrix(
+            int[][] oldMatrix,
             int leftXCornerValue,
             int rightXCornerValue,
             int topYCornerValue,
             int bottomYCornerValue) {
-        int[][][] newMatrix = new int[rightXCornerValue - leftXCornerValue][bottomYCornerValue - topYCornerValue][2];
+        int[][] newMatrix = new int[rightXCornerValue - leftXCornerValue][bottomYCornerValue - topYCornerValue];
         int i = 0;
         int j = 0;
         for (int y = topYCornerValue; y < bottomYCornerValue; y++) {
             for (int x = leftXCornerValue; x < rightXCornerValue; x++) {
-                newMatrix[i][j][0] = oldMatrix[x][y][0];
+                newMatrix[i][j] = oldMatrix[x][y];
                 i++;
             }
             j++;

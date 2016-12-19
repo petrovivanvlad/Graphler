@@ -16,9 +16,10 @@ public class ImageMatrixLoader {
 
     /*
     Структура матрицы изображения:
-        x y color
-        0 0 0 - белый пиксель
-        0 0 1 - черный пиксель
+        [][]: value
+        x y: color
+        0 0: 0 - белый пиксель
+        0 0: 1 - черный пиксель
      */
 
     public ImageMatrixLoader() {
@@ -33,14 +34,14 @@ public class ImageMatrixLoader {
             ImageContainer.bact_BaA_266nm_BI = ImageIO.read(Files.newInputStream(Paths.get(ImageContainer.bact_BaA_266nm_Path)));
             ImageContainer.bact_BaA_266nm_Width = ImageContainer.bact_BaA_266nm_BI.getWidth();
             ImageContainer.bact_BaA_266nm_Height = ImageContainer.bact_BaA_266nm_BI.getHeight();
-            ImageContainer.bact_BaA_266nm_matrix = new int[ImageContainer.bact_BaA_266nm_Width][ImageContainer.bact_BaA_266nm_Height][2];
+            ImageContainer.bact_BaA_266nm_matrix = new int[ImageContainer.bact_BaA_266nm_Width][ImageContainer.bact_BaA_266nm_Height];
             ImageContainer.bact_BaA_266nm_matrix = populateMatrix(ImageContainer.bact_BaA_266nm_BI, ImageContainer.bact_BaA_266nm_matrix, ImageContainer.bact_BaA_266nm_Path);
             ImageContainer.bact_BaA_266nm_matrix = ImageMatrixPreProcess.normalizeMatrix(ImageContainer.bact_BaA_266nm_matrix);
 
             ImageContainer.bact_cereus_280nm_BI = ImageIO.read(Files.newInputStream(Paths.get(ImageContainer.bact_cereus_280nm_Path)));
             ImageContainer.bact_cereus_280nm_Width = ImageContainer.bact_cereus_280nm_BI.getWidth();
             ImageContainer.bact_cereus_280nm_Height = ImageContainer.bact_cereus_280nm_BI.getHeight();
-            ImageContainer.bact_cereus_280nm_matrix = new int[ImageContainer.bact_cereus_280nm_Width][ImageContainer.bact_cereus_280nm_Height][2];
+            ImageContainer.bact_cereus_280nm_matrix = new int[ImageContainer.bact_cereus_280nm_Width][ImageContainer.bact_cereus_280nm_Height];
             ImageContainer.bact_cereus_280nm_matrix = populateMatrix(ImageContainer.bact_cereus_280nm_BI, ImageContainer.bact_cereus_280nm_matrix, ImageContainer.bact_cereus_280nm_Path);
             ImageContainer.bact_cereus_280nm_matrix = ImageMatrixPreProcess.normalizeMatrix(ImageContainer.bact_cereus_280nm_matrix);
         } catch (IOException e) {
@@ -48,7 +49,7 @@ public class ImageMatrixLoader {
         }
     }
 
-    private int[][][] populateMatrix(BufferedImage tempImage, int[][][] tempMatrix, String imageName) {
+    private int[][] populateMatrix(BufferedImage tempImage, int[][] tempMatrix, String imageName) {
         Color c;
         System.out.println("Заполняем матрицу изображения " + imageName);
         for (int y = 0; y < tempImage.getHeight(); y++) {
@@ -58,26 +59,23 @@ public class ImageMatrixLoader {
                 int green = c.getGreen();
                 int blue = c.getBlue();
                 if (red < 240 || green < 240 || blue < 240) {
-                    tempMatrix[x][y][0] = 1;
+                    tempMatrix[x][y] = 1;
                 } else {
-                    tempMatrix[x][y][0] = 0;
+                    tempMatrix[x][y] = 0;
                 }
             }
         }
         return tempMatrix;
     }
 
-    public static void matrixPrint(int[][][] tempMatrix) {
+    public static void matrixPrint(int[][] tempMatrix) {
         System.out.println("Выводим матрицу: ");
-        System.out.println("X = " + tempMatrix.length); // X
-        System.out.println("Y = " + tempMatrix[0].length); // Y
-        System.out.println("Z = " + tempMatrix[0][0].length); // Z
-        //System.out.println(tempMatrix[0][0][0]);
-        //System.out.println(tempMatrix[0][0][1]);
+        System.out.println("X length = " + tempMatrix.length); // X
+        System.out.println("Y length = " + tempMatrix[0].length); // Y
 
         for (int y = 0; y < tempMatrix[0].length; y++) {
             for (int x = 0; x < tempMatrix.length; x++) {
-                System.out.print(tempMatrix[x][y][0]);
+                System.out.print(tempMatrix[x][y]);
             }
             System.out.print("\n");
         }

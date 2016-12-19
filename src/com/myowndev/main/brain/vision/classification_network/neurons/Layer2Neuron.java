@@ -1,9 +1,9 @@
-package com.myowndev.main.brain.vision_nn.neurons;
+package com.myowndev.main.brain.vision.classification_network.neurons;
 
 /**
  * Created by Iwanp on 15.12.2016.
  */
-public class Layer3Neuron {
+public class Layer2Neuron {
 
     // Подсчет возможных изгибов линии спектра на картине
 
