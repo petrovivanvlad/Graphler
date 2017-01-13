@@ -25,8 +25,8 @@ public class ImageMatrixLoader {
     public ImageMatrixLoader() {
         initImages();
 
-        matrixPrint(ImageContainer.bact_BaA_266nm_matrix);
-        matrixPrint(ImageContainer.bact_cereus_280nm_matrix);
+        matrixPrint(ImageContainer.bact_BaA_266nm_matrix, ImageContainer.bact_BaA_266nm_Path);
+        matrixPrint(ImageContainer.bact_cereus_280nm_matrix, ImageContainer.bact_cereus_280nm_Path);
     }
 
     private void initImages() {
@@ -68,8 +68,8 @@ public class ImageMatrixLoader {
         return tempMatrix;
     }
 
-    public static void matrixPrint(int[][] tempMatrix) {
-        System.out.println("Выводим матрицу: ");
+    public static void matrixPrint(int[][] tempMatrix, String imageName) {
+        System.out.println("Выводим матрицу " + imageName + " : ");
         System.out.println("X length = " + tempMatrix.length); // X
         System.out.println("Y length = " + tempMatrix[0].length); // Y
 

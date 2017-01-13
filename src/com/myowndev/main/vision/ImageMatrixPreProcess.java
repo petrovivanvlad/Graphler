@@ -5,28 +5,49 @@ package com.myowndev.main.vision;
  */
 public class ImageMatrixPreProcess {
 
-    /* Нормализованная матрица кривой спектра -
-         массив последовательных значений с одним закрашенным
-         пикселем в каждом столбце по вертикали.
-     */
-
     public static int[][] normalizeMatrix(int[][] tempMatrix) {
         // Убираем шкалы по краям (оси абсцисс и ординат с подписями):
         tempMatrix = removeCoordsLines(tempMatrix);
         // Убираем белое пространство вокруг линии спектра:
         tempMatrix = removeWhiteSpaces(tempMatrix);
+        // Скейлим матрицу, чтобы достичь универсального размера по датасету ([10][40]):
+        tempMatrix = matrixScale(tempMatrix);
         // Восстанавливаем пропущенные промежутки линии спектра:
-        // TODO: можно не делать
+        tempMatrix = linearApproximation(tempMatrix);
         // Делаем линию тоньще, чтобы вокруг каждого закрашенного пикселя был только один закрашенный пиксель вокруг:
-        // TODO: можно сделать
+
         return tempMatrix;
     }
-    private int[][] makeLineThinner(int[][] tempMatrix) {
+    private static int[][] matrixScale(int[][] tempMatrix) {
+        // TODO: переделать, чтобы не обрезало/увеличивало, а скейлило.
         return tempMatrix;
     }
-    private int[][] do_KalmanFilter(int[][] tempMatrix) { // https://habrahabr.ru/post/166693/
+    private static int[][] makeLineThinner(int[][] tempMatrix) {
         return tempMatrix;
     }
+
+    private static int[][] linearApproximation(int[][] tempMatrix) {
+        // TODO: доделать, чтоб линейно было
+        int filledYLeftIndex = 0;
+        int filledYRightIndex = 0;
+        for (int x = 0; x < tempMatrix.length; x++) {
+            int yIterator = 0;
+            boolean emptyColumn = true;
+            do {
+                if (tempMatrix[x][yIterator] == 1) {
+                    filledYLeftIndex = yIterator;
+                    emptyColumn = false;
+                    break;
+                }
+                yIterator++;
+            } while (yIterator < tempMatrix[0].length);
+            if (emptyColumn) {
+                tempMatrix[x][filledYLeftIndex] = 1;
+            }
+        }
+        return tempMatrix;
+    }
+
     private static int[][] removeWhiteSpaces(int[][] tempMatrix) {
         int leftXCornerValue = 0;
         int rightXCornerValue = tempMatrix.length;
